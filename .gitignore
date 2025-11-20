@@ -1,0 +1,27 @@
+# ----------------------------------------------------
+# Archivos de Seguridad y Entorno (¡Nunca subir a Git!)
+# ----------------------------------------------------
+
+# La clave secreta de JWT y configuraciones sensibles
+.env
+
+# Entorno Virtual de Python
+venv/
+
+# Base de datos SQLite local (NO debe subirse)
+sitios.db
+
+# ----------------------------------------------------
+# Archivos de Python Generados
+# ----------------------------------------------------
+
+# Archivos de caché
+__pycache__/
+*.pyc
+
+# ----------------------------------------------------
+# Archivos de Salida del Proyecto
+# ----------------------------------------------------
+
+# Carpeta donde se guardan los archivos ZIP generados (D103)
+site_output/

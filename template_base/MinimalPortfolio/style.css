@@ -1,0 +1,7 @@
+/* template_base/MinimalPortfolio/style.css */
+body { font-family: sans-serif; margin: 0; padding: 20px; background-color: #f4f4f9; color: #333; }
+header { text-align: center; padding: 30px; background-color: #fff; border-bottom: 2px solid #ddd; }
+h1 { color: #007bff; }
+nav a { margin: 0 10px; text-decoration: none; color: #007bff; }
+nav a:hover { text-decoration: underline; }
+#content { max-width: 800px; margin: 40px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="dashboard-layout">
+    <header>
+        <h1>Generador de Sitios</h1>
+        <nav>
+            <a href="admin_page.html" id="adminLink" class="nav-link admin" style="display: none;">Panel Admin</a>
+            <span id="userDisplay" class="nav-link">Cargando...</span>
+            <a href="#" onclick="logout()" class="nav-link">Salir</a>
+        </nav>
+    </header>
+    <main class="project-management">
+        <h2>Nuevo Proyecto</h2>
+        <div id="projectMessage" class="message" style="display: none;"></div>
+        
+        <label>Nombre del Proyecto</label>
+        <input type="text" id="projectName" placeholder="Ej: Mi Portafolio 2025">
+        
+        <label>Seleccionar Plantilla</label>
+        <select id="templateSelect"><option>Cargando...</option></select>
+        
+        <div id="dynamicFields" style="margin-top: 20px;"></div>
+        
+        <button id="saveBtn" class="primary-btn">Guardar y Generar</button>
+    </main>
+    <script src="js/main.js"></script>
+</body>
+</html>

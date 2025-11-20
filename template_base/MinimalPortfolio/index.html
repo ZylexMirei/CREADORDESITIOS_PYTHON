@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{TITULO_PAGINA}}</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; background-color: #f4f4f4; color: #333; margin: 0; padding: 0; }
+        .container { width: 80%; margin: auto; overflow: hidden; padding: 20px; background: #fff; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        header { background: #333; color: #fff; padding: 10px 0; text-align: center; }
+        header h1 { margin: 0; }
+        .contact-info { text-align: center; padding: 10px 0; border-bottom: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>{{NOMBRE_COMPLETO}}</h1>
+    </header>
+    <div class="container">
+        <div class="contact-info">
+            <p>Email: {{EMAIL_CONTACTO}} | Teléfono: {{TELEFONO_CONTACTO}} | Web: <a href="{{URL_PERSONAL}}">{{URL_PERSONAL}}</a></p>
+        </div>
+        
+        <h2>Acerca de Mí</h2>
+        <p>{{DESCRIPCION_PERSONAL}}</p>
+        
+        <h2>Proyectos Destacados</h2>
+        <ul>
+            <li><strong>{{PROYECTO_1_NOMBRE}}</strong>: {{PROYECTO_1_DESCRIPCION}}</li>
+            <li><strong>{{PROYECTO_2_NOMBRE}}</strong>: {{PROYECTO_2_DESCRIPCION}}</li>
+        </ul>
+        
+        <footer>
+            <p>&copy; 2024 - {{NOMBRE_COMPLETO}}. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+</body>
+</html>

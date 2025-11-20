@@ -1,0 +1,16 @@
+body {
+    background-color: #ffffff;
+    color: #333;
+    font-family: 'Georgia', serif;
+    line-height: 1.8;
+    margin: 0;
+}
+header { padding: 60px 20px; text-align: center; border-bottom: 1px solid #eee; }
+h1 { font-size: 2.5em; margin: 0; color: #222; }
+.subtitle { color: #777; font-style: italic; margin-top: 10px; }
+article { max-width: 700px; margin: 60px auto; padding: 0 20px; }
+h2 { font-family: Arial, sans-serif; font-size: 1.8em; }
+.read-more { 
+    display: block; text-align: center; margin-top: 50px; 
+    color: #007bff; text-decoration: none; font-family: Arial, sans-serif; 
+}

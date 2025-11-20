@@ -1,0 +1,16 @@
+body { margin: 0; font-family: 'Arial Black', sans-serif; background: #f4f4f4; }
+.hero {
+    background-color: #000;
+    color: #fff;
+    padding: 100px 50px;
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+}
+h1 { font-size: 5vw; text-transform: uppercase; margin: 0; line-height: 0.9; }
+span { color: #ffeb3b; }
+.content { padding: 50px; max-width: 800px; }
+h3 { font-size: 2em; color: #333; margin-bottom: 10px; }
+p { font-family: Arial, sans-serif; font-size: 1.2em; color: #555; }
+.contact-btn {
+    display: inline-block; background: #000; color: #ffeb3b; padding: 20px 40px;
+    text-decoration: none; margin-top: 30px; font-size: 1.2em;
+}
