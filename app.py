@@ -1,4 +1,4 @@
-# app.py - VERSIÓN FINAL PRO (OTP, Roles, Logs, 7 Plantillas)
+# app.py - VERSIÓN FINAL CORREGIDA
 import os
 import sqlite3
 import datetime
@@ -21,9 +21,8 @@ from passlib.context import CryptContext
 # --- CONFIGURACIÓN ---
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY", "SUPER_SECRET_KEY_2025")
-# Configuración de Email (Pon estos en tu .env idealmente)
-EMAIL_USER = os.getenv("EMAIL_USER", "MI_CORREO") 
-EMAIL_PASS = os.getenv("EMAIL_PASS", "MI_CONTRASEÑA_DE_APP") 
+EMAIL_USER = os.getenv("EMAIL_USER", "tucorreo@gmail.com") 
+EMAIL_PASS = os.getenv("EMAIL_PASS", "tucontraseñadeaplicacion") 
 
 DATABASE_NAME = "sitios.db"
 BASE_DIR = Path(__file__).resolve().parent
@@ -33,6 +32,7 @@ TEMPLATE_BASE_DIR = BASE_DIR / 'template_base'
 if not SITE_OUTPUT_DIR.exists(): SITE_OUTPUT_DIR.mkdir()
 
 app = Flask(__name__)
+# CORS habilitado para todo (ajustar en producción)
 CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "*"}})
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
@@ -47,26 +47,22 @@ def init_db():
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Tabla usuarios actualizada con verificación
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
                 email TEXT UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
-                full_name TEXT,
                 role TEXT NOT NULL DEFAULT 'standard',
                 is_verified BOOLEAN NOT NULL DEFAULT 0
             );
         """)
         
-        # Tabla OTP para control estricto
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS otp_codes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 code TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 expires_at TIMESTAMP NOT NULL,
                 is_used BOOLEAN DEFAULT 0,
                 FOREIGN KEY (user_id) REFERENCES users(id)
@@ -79,8 +75,7 @@ def init_db():
                 timestamp TEXT NOT NULL,
                 user_id INTEGER,
                 action TEXT NOT NULL,
-                details TEXT,
-                FOREIGN KEY (user_id) REFERENCES users(id)
+                details TEXT
             );
         """)
 
@@ -90,7 +85,6 @@ def init_db():
                 name TEXT NOT NULL,
                 description TEXT,
                 base_path TEXT NOT NULL,
-                thumbnail_url TEXT,
                 is_active BOOLEAN DEFAULT 1
             );
         """)
@@ -108,12 +102,12 @@ def init_db():
             );
         """)
         
-        # Semilla de 7 Plantillas
+        # Insertar plantillas si no existen
         cursor.execute("SELECT COUNT(*) FROM templates")
         if cursor.fetchone()[0] == 0:
             templates = [
-                ('MinimalPortfolio', 'Portafolio elegante y minimalista (Mejorado).', 'MinimalPortfolio'),
-                ('StartupLanding', 'Landing page moderna para productos (Mejorado).', 'StartupLanding'),
+                ('MinimalPortfolio', 'Portafolio elegante y minimalista.', 'MinimalPortfolio'),
+                ('StartupLanding', 'Landing page moderna para productos.', 'StartupLanding'),
                 ('TechDark', 'Tema oscuro ideal para desarrolladores.', 'TechDark'),
                 ('RestoMenu', 'Elegancia para restaurantes y menús.', 'RestoMenu'),
                 ('EventCountdown', 'Página de evento con cuenta regresiva.', 'EventCountdown'),
@@ -137,7 +131,7 @@ def log_action(user_id, action, details=None):
 
 def send_email_otp(to_email, otp_code):
     msg = MIMEText(f"Tu código de verificación es: {otp_code}\n\nExpira en 5 minutos.")
-    msg['Subject'] = "Código de Verificación - Proyecto Isabella"
+    msg['Subject'] = "Código de Verificación - Static Flow"
     msg['From'] = EMAIL_USER
     msg['To'] = to_email
 
@@ -164,7 +158,6 @@ def token_required(f):
         try:
             data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
             current_user_id = data['user_id']
-            # Validar rol admin si es necesario
             request.user_role = data.get('role')
         except: return jsonify({"message": "Token inválido o expirado."}), 401
         return f(current_user_id, *args, **kwargs)
@@ -179,7 +172,7 @@ def admin_required(f):
         return f(current_user_id, *args, **kwargs)
     return decorated
 
-# --- RUTAS AUTH & OTP ---
+# --- RUTAS ---
 @app.route('/api/auth/register', methods=['POST'])
 def register():
     data = request.json
@@ -192,7 +185,7 @@ def register():
         if conn.execute("SELECT id FROM users WHERE email=? OR username=?", (email, username)).fetchone():
             return jsonify({"message": "Usuario ya existe"}), 409
         
-        # Rol admin para el primero
+        # Primer usuario es admin
         role = 'admin' if conn.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0 else 'standard'
         hashed = pwd_context.hash(password)
         
@@ -200,21 +193,23 @@ def register():
                            (email, hashed, username, role))
         user_id = cur.lastrowid
         
-        # Generar OTP
         otp = ''.join(random.choices(string.digits, k=6))
         expires = datetime.datetime.now() + datetime.timedelta(minutes=5)
         
         conn.execute("INSERT INTO otp_codes (user_id, code, expires_at) VALUES (?, ?, ?)",
                      (user_id, otp, expires))
-        conn.commit()
         
+        # INTENTO DE ENVÍO DE EMAIL CON ROLLBACK
         if send_email_otp(email, otp):
+            conn.commit() # Confirmamos cambios solo si el email salió
             log_action(user_id, 'REGISTER_INIT', 'OTP enviado')
             return jsonify({"message": "Usuario registrado. Verifique su email.", "user_id": user_id}), 201
         else:
-            return jsonify({"message": "Error enviando email, pero usuario creado."}), 500
+            conn.rollback() # Cancelamos la creación del usuario si falla el email
+            return jsonify({"message": "Error enviando email. Intente más tarde."}), 500
             
     except Exception as e:
+        conn.rollback()
         return jsonify({"message": str(e)}), 500
     finally: conn.close()
 
@@ -225,31 +220,25 @@ def verify_otp():
     
     conn = get_db_connection()
     try:
-        # Buscar OTP válido y no usado
         record = conn.execute("""
             SELECT * FROM otp_codes 
             WHERE user_id=? AND code=? AND is_used=0 
-            ORDER BY created_at DESC LIMIT 1
+            ORDER BY id DESC LIMIT 1
         """, (user_id, code)).fetchone()
         
         if not record:
-            log_action(user_id, 'OTP_FAIL', 'Código incorrecto o no encontrado')
             return jsonify({"message": "Código inválido."}), 400
             
-        # Chequear expiración (formato string sqlite)
-        exp = datetime.datetime.fromisoformat(record['expires_at'])
+        exp = datetime.datetime.fromisoformat(str(record['expires_at']))
         if datetime.datetime.now() > exp:
-            log_action(user_id, 'OTP_EXPIRED', 'Código expirado intentado')
             return jsonify({"message": "El código ha expirado."}), 400
             
-        # Éxito
         conn.execute("UPDATE otp_codes SET is_used=1 WHERE id=?", (record['id'],))
         conn.execute("UPDATE users SET is_verified=1 WHERE id=?", (user_id,))
         conn.commit()
         
-        log_action(user_id, 'VERIFIED', 'Cuenta verificada exitosamente')
-        return jsonify({"message": "Cuenta verificada. Puede iniciar sesión."}), 200
-        
+        log_action(user_id, 'VERIFIED', 'Cuenta verificada')
+        return jsonify({"message": "Cuenta verificada."}), 200
     finally: conn.close()
 
 @app.route('/api/auth/login', methods=['POST'])
@@ -273,10 +262,8 @@ def login():
         'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
     }, SECRET_KEY, algorithm="HS256")
     
-    log_action(user['id'], 'LOGIN', 'Login exitoso')
     return jsonify({"token": token, "username": user['username'], "role": user['role']}), 200
 
-# --- RUTAS PROYECTOS (Resumen) ---
 @app.route('/api/templates', methods=['GET'])
 @token_required
 def get_templates(uid):
@@ -289,7 +276,6 @@ def get_templates(uid):
 @token_required
 def create_project(uid):
     data = request.json
-    # ... (Lógica de creación idéntica a tu versión anterior) ...
     conn = get_db_connection()
     try:
         cur = conn.execute("INSERT INTO projects (project_name, template_id, user_id, user_data_json) VALUES (?, ?, ?, ?)",
@@ -308,7 +294,6 @@ def download(uid, pid):
     
     if not proj: return jsonify({"message": "No encontrado"}), 404
     
-    # Generación ZIP
     user_data = json.loads(proj['user_data_json'])
     files = generate_site_content(proj['base_path'], user_data)
     
@@ -319,22 +304,22 @@ def download(uid, pid):
     
     return send_file(zip_buffer, mimetype='application/zip', as_attachment=True, download_name=f"{proj['project_name']}.zip")
 
-# Función auxiliar para leer plantillas
 def generate_site_content(base_path, data):
     path = TEMPLATE_BASE_DIR / base_path
     if not path.exists(): return []
     
     files = []
-    # Intenta leer index.html y style.css
-    for fname in ['index.html', 'style.css']:
-        fpath = path / fname
-        if fpath.exists():
+    # Busca todos los archivos html y css en la carpeta
+    for fpath in path.glob('*'):
+        if fpath.is_file() and fpath.suffix in ['.html', '.css']:
             content = fpath.read_text(encoding='utf-8')
-            for k, v in data.items(): content = content.replace(f"[[{k}]]", str(v))
-            files.append((fname, content))
+            # Reemplazo seguro
+            for k, v in data.items():
+                if v: # Solo reemplaza si hay valor
+                    content = content.replace(f"[[{k}]]", str(v))
+            files.append((fpath.name, content))
     return files
 
-# --- ADMIN ---
 @app.route('/api/admin/logs', methods=['GET'])
 @admin_required
 def get_logs(uid):

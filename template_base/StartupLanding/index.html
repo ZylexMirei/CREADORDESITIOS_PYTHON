@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{NOMBRE_PRODUCTO}} - {{SLOGAN_PRODUCTO}}</title>
+    <title>[[PRODUCTO_NOMBRE]] - [[SUBTITULAR]]</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; margin: 0; padding: 0; background-color: #f8f9fa; }
         .hero { background: #007bff; color: white; padding: 50px 20px; text-align: center; }
@@ -11,30 +11,33 @@
         .features { padding: 40px 20px; text-align: center; }
         .feature-box { padding: 20px; border: 1px solid #ccc; margin: 15px; display: inline-block; width: 30%; }
         footer { background: #333; color: white; text-align: center; padding: 10px; position: fixed; bottom: 0; width: 100%; }
+        .cta-btn { padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer; font-size: 1.2em; text-decoration: none; border-radius: 5px;}
     </style>
 </head>
 <body>
     <div class="hero">
-        <h1>{{NOMBRE_PRODUCTO}}</h1>
-        <p class="slogan">{{SLOGAN_PRODUCTO}}</p>
-        <p>Precio de lanzamiento: {{PRECIO_PRODUCTO}}</p>
-        <button style="padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer;">¡Comprar Ahora!</button>
+        <h1>[[TITULAR_PRINCIPAL]]</h1>
+        <p class="slogan">[[SUBTITULAR]]</p>
+        <p>Producto: [[PRODUCTO_NOMBRE]]</p>
+        
+        <br>
+        <a href="#" class="cta-btn">[[CTA_TEXT]]</a>
     </div>
 
     <div class="features">
         <h2>Características Principales</h2>
         <div class="feature-box">
-            <h3>{{FEATURE_1_TITULO}}</h3>
-            <p>{{FEATURE_1_DESCRIPCION}}</p>
+            <h3>[[FEATURE_1_TITULO]]</h3>
+            <p>[[FEATURE_1_DESCRIPCION]]</p>
         </div>
         <div class="feature-box">
-            <h3>{{FEATURE_2_TITULO}}</h3>
-            <p>{{FEATURE_2_DESCRIPCION}}</p>
+            <h3>[[FEATURE_2_TITULO]]</h3>
+            <p>[[FEATURE_2_DESCRIPCION]]</p>
         </div>
     </div>
 
     <footer>
-        Contacto: <a href="mailto:{{EMAIL_CONTACTO}}">{{EMAIL_CONTACTO}}</a> | Creado con nuestro generador.
+        Contacto: <a href="mailto:[[EMAIL_CONTACTO]]">[[EMAIL_CONTACTO]]</a> | Creado con Static Flow.
     </footer>
 </body>
 </html>
