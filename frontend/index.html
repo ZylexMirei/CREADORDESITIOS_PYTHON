@@ -6,6 +6,9 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="center-content">
+    
+    <div id="particles-js"></div>
+
     <div class="auth-container">
         <h1>Bienvenido</h1>
         <div id="message" class="message" style="display: none;"></div>
@@ -15,6 +18,11 @@
             <input type="text" id="loginId" required>
             <label>Contraseña</label>
             <input type="password" id="loginPassword" required>
+            
+            <div style="text-align: right; margin-bottom: 10px;">
+                <a href="forgot_password.html" style="font-size: 0.9em; color: var(--primary-color); text-decoration: none;">¿Olvidaste tu contraseña?</a>
+            </div>
+
             <button type="submit" class="primary-btn">Ingresar</button>
             <button type="button" id="showRegister" class="secondary-btn">Crear cuenta</button>
         </form>
@@ -30,6 +38,9 @@
             <button type="button" id="showLogin" class="secondary-btn">Ya tengo cuenta</button>
         </form>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="js/effects.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

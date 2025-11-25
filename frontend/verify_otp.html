@@ -2,19 +2,28 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Verificar</title>
+    <title>Verificar Código</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="center-content">
+    
+    <div id="particles-js"></div>
+
     <div class="auth-container">
-        <h2>🛡️ Verificación</h2>
-        <p>Ingresa el código enviado a tu correo.</p>
-        <div id="message" class="message" style="display:none;"></div>
+        <h2>🛡️ Verificación de Seguridad</h2>
+        <p style="text-align: center; margin-bottom: 20px; color: #555;">
+            Introduce el código de 6 dígitos enviado a tu correo.
+        </p>
+        <div id="message" class="message" style="display: none;"></div>
         <form id="otpForm">
-            <input type="text" id="otpCode" class="otp-input" placeholder="000000" maxlength="6" required>
-            <button type="submit" class="primary-btn">Verificar</button>
+            <input type="text" id="otpCode" class="otp-input" maxlength="6" placeholder="000000" required>
+            <button type="submit" class="primary-btn">Verificar Código</button>
         </form>
+        <a href="index.html" class="secondary-btn" style="display:block; text-align:center; margin-top:20px;">Cancelar</a>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="js/effects.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

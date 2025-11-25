@@ -2,21 +2,175 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Administración</title>
+    <title>Admin Panel - Static Flow</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="dashboard-layout">
+    
+    <div id="particles-js"></div>
+
     <header>
-        <h1>Panel de Administración</h1>
+        <h1><i class="fa-solid fa-user-shield"></i> Panel de Administración</h1>
         <nav>
-            <a href="dashboard.html" class="nav-link">Volver</a>
-            <a href="#" onclick="logout()" class="nav-link">Salir</a>
+            <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-arrow-left"></i> Volver al Dashboard</a>
+            <a href="#" onclick="logout()" class="nav-link"><i class="fa-solid fa-right-from-bracket"></i> Salir</a>
         </nav>
     </header>
-    <main>
-        <h2>Bitácora del Sistema (Logs)</h2>
-        <div id="logsContainer">Cargando...</div>
+
+    <main class="project-management" style="max-width: 1000px;">
+        
+        <div class="admin-tabs">
+            <button class="tab-btn active" onclick="openTab('logs')"><i class="fa-solid fa-list"></i> Bitácora</button>
+            <button class="tab-btn" onclick="openTab('users')"><i class="fa-solid fa-users"></i> Usuarios</button>
+            <button class="tab-btn" onclick="openTab('templates')"><i class="fa-solid fa-upload"></i> Subir Plantillas</button>
+        </div>
+
+        <div id="logs" class="tab-content active">
+            <h3>Actividad Reciente del Sistema</h3>
+            <p style="font-size:0.9em; color:#666;">Últimas 100 acciones registradas.</p>
+            <div id="logsContainer">Cargando logs...</div>
+        </div>
+
+        <div id="users" class="tab-content">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>Lista de Usuarios</h3>
+                <button onclick="loadAdminUsers()" class="secondary-btn" style="width:auto; margin:0;">🔄 Actualizar</button>
+            </div>
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    </tbody>
+            </table>
+        </div>
+
+        <div id="templates" class="tab-content">
+            <h3><i class="fa-solid fa-file-zipper"></i> Agregar Nueva Plantilla</h3>
+            <div class="message success" style="text-align:left;">
+                <strong>Instrucciones:</strong>
+                <ul style="margin-left:20px; margin-top:5px;">
+                    <li>El archivo debe ser un <b>.ZIP</b>.</li>
+                    <li>Dentro del ZIP debe estar el <code>index.html</code> y <code>style.css</code> (y carpetas de imágenes si aplica).</li>
+                    <li>Usa la sintaxis <code>[[VARIABLE]]</code> en el HTML para los campos editables.</li>
+                </ul>
+            </div>
+            
+            <form id="uploadTemplateForm" style="margin-top:20px; border: 2px dashed #ccc; padding:30px; border-radius:10px; text-align:center;">
+                <div style="max-width:500px; margin:0 auto; text-align:left;">
+                    <label>Nombre de la Plantilla (Sin espacios)</label>
+                    <input type="text" id="tplName" placeholder="Ej: GamerLanding" required pattern="[A-Za-z0-9]+">
+                    
+                    <label>Descripción Corta</label>
+                    <input type="text" id="tplDesc" placeholder="Ej: Sitio oscuro para clanes de juegos" required>
+                    
+                    <label>Archivo ZIP</label>
+                    <input type="file" id="tplFile" accept=".zip" required style="border:none; padding:10px 0;">
+                    
+                    <button type="submit" class="primary-btn"><i class="fa-solid fa-cloud-arrow-up"></i> Subir Plantilla</button>
+                </div>
+            </form>
+        </div>
+
     </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="js/effects.js"></script>
     <script src="js/main.js"></script>
+    
+    <script>
+        // --- LÓGICA DEL PANEL DE ADMIN ---
+
+        // Función para cambiar de pestaña
+        function openTab(tabName) {
+            // Ocultar todos los contenidos
+            document.querySelectorAll('.tab-content').forEach(div => div.style.display = 'none');
+            // Quitar clase active de los botones
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Mostrar el seleccionado
+            document.getElementById(tabName).style.display = 'block';
+            event.currentTarget.classList.add('active'); // Usar currentTarget para asegurar que es el botón
+            
+            // Cargar datos si es necesario
+            if(tabName === 'users') loadAdminUsers();
+            if(tabName === 'logs') loadAdminLogs(); // Aseguramos recarga de logs al volver
+        }
+
+        // Cargar Usuarios
+        async function loadAdminUsers() {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Cargando...</td></tr>';
+            try {
+                const res = await fetchAPI('/admin/users');
+                if(!res.ok) throw new Error('Error al cargar');
+                const users = await res.json();
+                
+                tbody.innerHTML = users.map(u => `
+                    <tr>
+                        <td>#${u.id}</td>
+                        <td><b>${u.username}</b></td>
+                        <td>${u.email}</td>
+                        <td>
+                            <span style="
+                                background:${u.role==='admin'?'#ffebee':'#e8f5e9'}; 
+                                color:${u.role==='admin'?'#c62828':'#2e7d32'};
+                                padding: 2px 8px; border-radius:12px; font-size:0.85em; font-weight:bold;">
+                                ${u.role.toUpperCase()}
+                            </span>
+                        </td>
+                        <td>${u.is_verified ? '<span style="color:green">✅ Verificado</span>' : '<span style="color:orange">⏳ Pendiente</span>'}</td>
+                    </tr>
+                `).join('');
+            } catch(e) { 
+                tbody.innerHTML = '<tr><td colspan="5" style="color:red; text-align:center;">Error cargando usuarios. Verifica tu conexión o rol.</td></tr>'; 
+            }
+        }
+
+        // Subir Plantilla
+        document.getElementById('uploadTemplateForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('name', document.getElementById('tplName').value);
+            formData.append('description', document.getElementById('tplDesc').value);
+            const fileInput = document.getElementById('tplFile');
+            
+            if(fileInput.files.length === 0) {
+                alert("Selecciona un archivo ZIP.");
+                return;
+            }
+            formData.append('file', fileInput.files[0]);
+
+            if(!confirm('¿Estás seguro de subir esta plantilla?')) return;
+
+            try {
+                const token = localStorage.getItem('authToken');
+                // Nota: No usamos fetchAPI aquí porque FormData requiere que NO pongamos Content-Type manual
+                const res = await fetch('http://127.0.0.1:5000/api/admin/upload-template', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                
+                const data = await res.json();
+                if(res.ok) { 
+                    alert('¡Plantilla subida con éxito! Estará disponible inmediatamente.'); 
+                    // Limpiar form
+                    e.target.reset();
+                } else { 
+                    alert('Error: ' + data.message); 
+                }
+            } catch(err) { 
+                alert('Error de red al subir archivo.'); 
+            }
+        };
+    </script>
 </body>
 </html>
