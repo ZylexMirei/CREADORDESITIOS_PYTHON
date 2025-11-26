@@ -1,201 +1,334 @@
-/* frontend/css/styles.css */
+/* frontend/css/styles.css - VERSIÓN FINAL COMPLETA (ROJO/NEGRO + FIX BOTONES) */
+
 :root {
-    --primary-color: #1a73e8; /* Azul Google */
-    --primary-hover: #155cb0;
-    --bg-color: #f8f9fa;
-    --card-bg: #ffffff;
-    --text-main: #202124;
-    --border-color: #dadce0;
-    --success-color: #34a853;
-    --error-color: #ea4335;
+    /* --- PALETA DE COLORES (ROJO, NEGRO, BLANCO) --- */
+    --primary-color: #E60023; /* Rojo Intenso */
+    --primary-hover: #b3001b; /* Rojo más oscuro al pasar el mouse */
+    --accent-color: #ffffff;  /* Blanco para acentos */
+    
+    --bg-color: #0d0d11;      /* Negro casi puro de fondo */
+    --card-bg-app: #1a1a1a;   /* Gris muy oscuro para tarjetas */
+    
+    --text-main: #e0e0e0;     /* Texto gris claro */
+    --text-dark: #111111;     /* Texto oscuro (por si acaso) */
+    
+    --border-color: #333333;
+    --success-color: #2ecc71;
+    --error-color: #e74c3c;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    /* El color de fondo base por si las partículas tardan en cargar */
-    background-color: #1a1a2e; 
+    background-color: var(--bg-color);
     color: var(--text-main);
     line-height: 1.6;
+    overflow-x: hidden; /* Evita scroll lateral */
 }
 
-/* Layouts */
-.center-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-    position: relative; /* Importante para el z-index */
-}
-
-.dashboard-layout {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    position: relative;
-}
-
-/* --- ESTILOS DE LOS PUNTITOS (PARTÍCULAS) --- */
+/* --- FONDO DE PUNTITOS (GLOBAL) --- */
 #particles-js {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1; /* Se pone DETRÁS de todo */
-    background-color: #1a1a2e; /* Fondo oscuro elegante */
+    z-index: -1;
+    background-color: var(--bg-color);
 }
 
-/* Tarjetas y Contenedores (Con Transparencia para ver el fondo) */
+/* =========================================
+   ESTILOS DE BOTONES BASE
+   ========================================= */
+
+button, .btn, .primary-btn, .secondary-btn {
+    display: inline-block;       
+    padding: 12px 24px;
+    border-radius: 50px;         
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;       
+    text-align: center;
+    transition: 0.3s;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+/* Botón Rojo Solido (Principal) */
+.primary-btn {
+    background-color: var(--primary-color);
+    color: white;     
+    box-shadow: 0 4px 15px rgba(230, 0, 35, 0.4); 
+}
+
+.primary-btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(230, 0, 35, 0.6);
+}
+
+/* Botón Transparente con Borde (Secundario) */
+.secondary-btn {
+    background: transparent;
+    color: white;
+    border: 2px solid var(--primary-color);
+}
+
+.secondary-btn:hover {
+    background-color: var(--primary-color);
+}
+
+/* Ajuste específico para botones grandes de Landing */
+.hero-btn {
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    margin: 10px;
+}
+
+/* =========================================
+   ESTILOS DE LA APP (Login, Dashboard, Admin)
+   ========================================= */
+
+.center-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.dashboard-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Tarjetas Oscuras */
 .auth-container, .project-management {
-    /* Blanco con 95% de opacidad para ver sutilmente los puntos detrás */
-    background: rgba(255, 255, 255, 0.95); 
+    background: rgba(20, 20, 20, 0.95);
+    border: 1px solid #333;
     padding: 40px;
-    border-radius: 12px; /* Bordes más redondeados */
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); /* Sombra moderna */
+    border-radius: 16px;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
     width: 100%;
     max-width: 480px;
     margin: 0 auto;
-    backdrop-filter: blur(4px); /* Efecto vidrio borroso (opcional, moderno) */
+    color: white;
 }
 
 .project-management { max-width: 1000px; }
 
-/* Headers */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 20px;
-    margin-bottom: 30px;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 8px;
-}
+h1, h2, h3 { color: white; margin-bottom: 20px; font-weight: 600; }
+p { color: #ccc; }
 
-h1, h2 { margin-bottom: 20px; color: var(--text-main); font-weight: 500; }
-
-/* Formularios */
-label { display: block; margin: 15px 0 5px; color: #5f6368; font-size: 0.9em; font-weight: 600; }
+/* Inputs y Formularios */
+label { display: block; margin: 15px 0 5px; color: #aaa; font-size: 0.9em; font-weight: 600; }
 
 input, select {
     width: 100%;
     padding: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border: 1px solid #444;
+    border-radius: 8px;
     font-size: 16px;
-    transition: 0.3s;
+    background: #0a0a0a; 
+    color: white;
 }
 
 input:focus, select:focus {
     border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+    box-shadow: 0 0 0 2px rgba(230, 0, 35, 0.3);
 }
 
-/* Botones */
-button {
-    cursor: pointer;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    font-weight: 600;
-    transition: 0.3s;
+/* Headers de Navegación */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 30px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    border-bottom: 1px solid #333;
 }
 
-.primary-btn {
-    background-color: var(--primary-color);
-    color: white;
-    width: 100%;
-    margin-top: 20px;
+.nav-link { 
+    color: white; 
+    text-decoration: none; 
+    margin-left: 20px; 
+    font-weight: 500; 
 }
+.nav-link:hover { color: var(--primary-color); }
+.nav-link.admin { color: #ff6b6b; } 
 
-.primary-btn:hover { background-color: var(--primary-hover); }
-
-.secondary-btn {
-    background: none;
-    color: var(--primary-color);
-    width: 100%;
-    margin-top: 10px;
-    display: inline-block;
-    text-decoration: none;
-}
-
-.secondary-btn:hover { text-decoration: underline; }
-
-/* Mensajes */
-.message {
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-    text-align: center;
-    font-size: 0.9em;
-}
-.success { background-color: #e6f4ea; color: var(--success-color); }
-.error { background-color: #fce8e6; color: var(--error-color); }
-
-/* Tabla de Logs (Admin) */
+/* Tablas (Admin) */
 .logs-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
     font-size: 0.9em;
-    background: white;
+    background: #111;
+    color: #eee;
+    border: 1px solid #333;
 }
-.logs-table th, .logs-table td {
-    text-align: left;
-    padding: 12px;
-    border-bottom: 1px solid var(--border-color);
-}
-.logs-table th { background-color: #f1f3f4; font-weight: 600; }
-.logs-table tr:hover { background-color: #f8f9fa; }
+.logs-table th { background-color: #222; padding: 12px; text-align: left; }
+.logs-table td { padding: 12px; border-bottom: 1px solid #333; }
+.logs-table tr:hover { background-color: #1a1a1a; }
 
-/* Input especial para OTP */
-.otp-input {
-    letter-spacing: 8px;
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
-}
-
-/* Enlaces de Header */
-.nav-link {
-    text-decoration: none;
-    color: var(--text-main);
-    margin-left: 20px;
-    font-weight: 500;
-}
-.nav-link.admin { color: #d93025; } 
-
-/* Pestañas del Admin */
+/* Pestañas (Admin) */
 .admin-tabs { 
     margin-bottom: 20px; 
-    border-bottom: 1px solid #ddd; 
-    display: flex;
-    gap: 10px;
+    border-bottom: 1px solid #333; 
+    display: flex; 
+    gap: 10px; 
 }
 .tab-btn { 
     background: none; 
+    color: #888; 
     border: none; 
     padding: 10px 20px; 
     cursor: pointer; 
-    color: #555; 
-    font-size: 16px; 
-    border-bottom: 3px solid transparent;
+    border-bottom: 3px solid transparent; 
 }
-.tab-btn:hover { background-color: rgba(0,0,0,0.05); }
 .tab-btn.active { 
     border-bottom: 3px solid var(--primary-color); 
     color: var(--primary-color); 
     font-weight: bold; 
 }
-.tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+.tab-btn:hover { color: white; }
+.tab-content { display: none; animation: fadeIn 0.3s; }
 .tab-content.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
+/* Mensajes */
+.message { padding: 10px; border-radius: 4px; margin-bottom: 20px; text-align: center; }
+.success { background-color: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 1px solid #2ecc71; }
+.error { background-color: rgba(231, 76, 60, 0.2); color: #e74c3c; border: 1px solid #e74c3c; }
+
+/* OTP Input */
+.otp-input { 
+    letter-spacing: 8px; 
+    text-align: center; 
+    font-size: 24px; 
+    font-weight: bold; 
+    background: black; 
+    color: white; 
+    border: 1px solid var(--primary-color); 
+}
+
+/* =========================================
+   ESTILOS DE LA LANDING PAGE (HERO)
+   ========================================= */
+
+.full-hero-container { padding: 20px; position: relative; }
+
+.landing-nav {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 60px;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    padding: 15px 30px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo { 
+    font-size: 1.5rem; 
+    font-weight: bold; 
+    color: #fff; 
+    text-transform: uppercase; 
+    letter-spacing: 2px;
+}
+
+.nav-links a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+.nav-links a:hover { color: var(--primary-color); }
+
+.landing-hero { 
+    text-align: center; 
+    padding: 60px 20px; 
+    max-width: 900px; 
+    margin: 0 auto; 
+}
+
+.hero-title-main {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: white;
+    text-shadow: 0 0 20px rgba(230, 0, 35, 0.5); 
+}
+
+.hero-subtitle { font-size: 1.5rem; color: #aaa; margin-bottom: 40px; }
+.text-red { color: var(--primary-color); font-weight: bold; }
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap; 
+}
+
+.features-section { max-width: 1200px; margin: 100px auto; padding: 0 20px; }
+.features-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+
+.glass-card {
+    background: rgba(20, 20, 20, 0.8);
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s;
+}
+
+.glass-card:hover { 
+    transform: translateY(-5px); 
+    border-color: var(--primary-color); 
+}
+
+.feature-icon { 
+    font-size: 2.5rem; 
+    color: var(--primary-color); 
+    margin-bottom: 20px; 
+}
+
+/* =========================================
+   EL "MARTILLO" (Solución definitiva al morado)
+   ========================================= */
+
+/* Obligamos al navegador a pintar los enlaces-botones de BLANCO siempre */
+a.primary-btn, 
+a.secondary-btn, 
+a.hero-btn {
+    color: #ffffff !important;       
+    text-decoration: none !important; 
+}
+
+/* Regla para enlaces visitados (ignorar historial) */
+a.primary-btn:visited, 
+a.secondary-btn:visited, 
+a.hero-btn:visited {
+    color: #ffffff !important;
+}
+
+/* Regla al pasar el mouse */
+a.primary-btn:hover, 
+a.secondary-btn:hover, 
+a.hero-btn:hover {
+    color: #ffffff !important;
 }
