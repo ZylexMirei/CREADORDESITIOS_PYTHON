@@ -2,15 +2,16 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Acceso - Isabella</title>
+    <title>Acceso - Static Flow</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="center-content">
     
     <div id="particles-js"></div>
 
     <div class="auth-container">
-        <h1>Bienvenido</h1>
+        <h1><i class="fa-solid fa-user-circle"></i> Bienvenido</h1>
         <div id="message" class="message" style="display: none;"></div>
 
         <form id="loginForm">
@@ -19,8 +20,10 @@
             <label>Contraseña</label>
             <input type="password" id="loginPassword" required>
             
-            <div style="text-align: right; margin-bottom: 10px;">
-                <a href="forgot_password.html" style="font-size: 0.9em; color: var(--primary-color); text-decoration: none;">¿Olvidaste tu contraseña?</a>
+            <div style="text-align: right; margin-bottom: 15px; margin-top:5px;">
+                <a href="forgot_password.html" style="font-size: 0.9em; color: var(--primary-color); text-decoration: none;">
+                    ¿Olvidaste tu contraseña?
+                </a>
             </div>
 
             <button type="submit" class="primary-btn">Ingresar</button>
@@ -34,6 +37,7 @@
             <input type="email" id="registerEmail" required>
             <label>Contraseña</label>
             <input type="password" id="registerPassword" required>
+            
             <button type="submit" class="primary-btn">Registrarse</button>
             <button type="button" id="showLogin" class="secondary-btn">Ya tengo cuenta</button>
         </form>

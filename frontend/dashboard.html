@@ -4,20 +4,23 @@
     <meta charset="UTF-8">
     <title>Dashboard</title>
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="dashboard-layout">
     
     <div id="particles-js"></div>
 
     <header>
-        <h1>Generador de Sitios</h1>
+        <h1><i class="fa-solid fa-layer-group"></i> Generador de Sitios</h1>
         <nav>
-            <a href="admin_page.html" id="adminLink" class="nav-link admin" style="display: none;">Panel Admin</a>
-            <span id="userDisplay" class="nav-link">Cargando...</span>
-            <a href="#" onclick="logout()" class="nav-link">Salir</a>
+            <a href="admin_page.html" id="adminLink" class="nav-link admin" style="display: none;">
+                <i class="fa-solid fa-shield-halved"></i> Panel Admin
+            </a>
+            <span id="userDisplay" class="nav-link"><i class="fa-solid fa-user"></i> Cargando...</span>
+            <a href="#" onclick="logout()" class="nav-link"><i class="fa-solid fa-right-from-bracket"></i> Salir</a>
         </nav>
     </header>
+    
     <main class="project-management">
         <h2>Nuevo Proyecto</h2>
         <div id="projectMessage" class="message" style="display: none;"></div>
@@ -30,7 +33,9 @@
         
         <div id="dynamicFields" style="margin-top: 20px;"></div>
         
-        <button id="saveBtn" class="primary-btn">Guardar y Generar</button>
+        <button id="saveBtn" class="primary-btn">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Guardar y Generar
+        </button>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
