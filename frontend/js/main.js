@@ -1,231 +1,181 @@
-// frontend/js/main.js - VERSIÓN FINAL
+/* frontend/js/main.js - VERSIÓN DEFINITIVA */
+
 const API_URL = 'http://127.0.0.1:5000/api';
 
+// --- UTILIDADES ---
 function showMessage(id, text, type = 'success') {
     const el = document.getElementById(id);
     if (el) {
-        el.style.display = 'block';
+        el.textContent = text;
         el.className = `message ${type}`;
-        el.innerHTML = text;
+        el.style.display = 'block';
+        setTimeout(() => el.style.display = 'none', 5000);
     }
 }
 
+// Función para cerrar sesión (Logout)
+function logout() {
+    if(confirm("¿Estás seguro de que quieres salir?")) {
+        localStorage.clear(); // Borra todo: token, usuario, ids temporales
+        window.location.href = 'index.html';
+    }
+}
+
+// Wrapper para conectar con el Backend (Fetch con Token)
 async function fetchAPI(endpoint, options = {}) {
     const token = localStorage.getItem('authToken');
     const headers = { 'Content-Type': 'application/json', ...options.headers };
+    
     if (token) headers['Authorization'] = `Bearer ${token}`;
-    return fetch(`${API_URL}${endpoint}`, { ...options, headers });
+
+    const res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+    
+    // Si el token expiró, sacar al usuario
+    if (res.status === 401 && !endpoint.includes('/auth/')) {
+        alert("Tu sesión ha expirado.");
+        logout();
+    }
+    return res;
 }
 
+// --- LÓGICA DE INICIO (Se ejecuta al cargar la página) ---
 document.addEventListener('DOMContentLoaded', () => {
     const path = window.location.pathname;
 
-    // --- 1. LOGIN / REGISTRO ---
+    // 1. PANTALLA DE LOGIN / REGISTRO (index.html)
     if (path.includes('index.html')) {
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-
-        if(document.getElementById('showRegister')) {
-            document.getElementById('showRegister').onclick = () => {
-                loginForm.style.display = 'none'; registerForm.style.display = 'block';
-            };
-        }
-        if(document.getElementById('showLogin')) {
-            document.getElementById('showLogin').onclick = () => {
-                registerForm.style.display = 'none'; loginForm.style.display = 'block';
-            };
-        }
-
-        if(loginForm) {
-            loginForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                try {
-                    const res = await fetch(`${API_URL}/auth/login`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            login_id: document.getElementById('loginId').value,
-                            password: document.getElementById('loginPassword').value
-                        })
-                    });
-                    const data = await res.json();
-                    
-                    if (res.ok) {
-                        localStorage.setItem('authToken', data.token);
-                        localStorage.setItem('username', data.username);
-                        localStorage.setItem('role', data.role);
-                        window.location.href = 'dashboard.html';
-                    } else if (res.status === 403) {
-                        localStorage.setItem('tempUserId', data.user_id);
-                        window.location.href = 'verify_otp.html';
-                    } else {
-                        showMessage('message', data.message, 'error');
-                    }
-                } catch(err) { showMessage('message', 'Error de conexión', 'error'); }
-            });
-        }
-
-        if(registerForm) {
-            registerForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                try {
-                    const res = await fetch(`${API_URL}/auth/register`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            username: document.getElementById('registerUsername').value,
-                            email: document.getElementById('registerEmail').value,
-                            password: document.getElementById('registerPassword').value
-                        })
-                    });
-                    const data = await res.json();
-                    if (res.ok) {
-                        localStorage.setItem('tempUserId', data.user_id);
-                        window.location.href = 'verify_otp.html';
-                    } else {
-                        showMessage('message', data.message, 'error');
-                    }
-                } catch(err) { showMessage('message', 'Error de conexión', 'error'); }
-            });
-        }
-    }
-
-    // --- 2. VERIFICACIÓN OTP (CON REDIRECCIÓN AL DASHBOARD) ---
+        setupAuthForms();
+    } 
+    // 2. PANTALLA DE VERIFICACIÓN OTP (verify_otp.html)
     else if (path.includes('verify_otp.html')) {
-        const form = document.getElementById('otpForm');
-        if(form) {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const userId = localStorage.getItem('tempUserId');
-                const messageDiv = document.getElementById('message');
-                const btn = e.target.querySelector('button');
-                
-                if (!userId) {
-                    showMessage('message', 'Error: ID perdido. Regístrate de nuevo.', 'error');
-                    return;
-                }
-
-                btn.textContent = "Entrando...";
-                btn.disabled = true;
-
-                try {
-                    const res = await fetch(`${API_URL}/auth/verify-otp`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            user_id: userId,
-                            code: document.getElementById('otpCode').value
-                        })
-                    });
-                    
-                    const data = await res.json();
-
-                    if (res.ok) {
-                        // GUARDAMOS EL TOKEN QUE NOS DA EL SERVIDOR
-                        if (data.token) {
-                            localStorage.setItem('authToken', data.token);
-                            localStorage.setItem('username', data.username);
-                            localStorage.setItem('role', data.role);
-                            
-                            // MENSAJE DE ÉXITO
-                            form.style.display = 'none';
-                            document.querySelector('.auth-container').innerHTML = `
-                                <div style="text-align: center;">
-                                    <h1 style="color: #4CAF50; font-size: 60px; margin: 10px 0;">✓</h1>
-                                    <h2>¡Bienvenido!</h2>
-                                    <p>Entrando al Dashboard...</p>
-                                </div>
-                            `;
-
-                            // REDIRIGIR AL DASHBOARD
-                            setTimeout(() => {
-                                window.location.href = 'dashboard.html';
-                            }, 1500);
-                        } else {
-                            showMessage('message', 'Error: Backend no envió token.', 'error');
-                            btn.disabled = false;
-                        }
-
-                    } else {
-                        showMessage('message', data.message || 'Código incorrecto', 'error');
-                        btn.textContent = "Verificar";
-                        btn.disabled = false;
-                    }
-                } catch(err) {
-                    console.error(err);
-                    showMessage('message', 'Error de conexión', 'error');
-                    btn.textContent = "Verificar";
-                    btn.disabled = false;
-                }
-            });
-        }
+        setupOTPForm();
     }
-
-    // --- 3. DASHBOARD ---
+    // 3. DASHBOARD (dashboard.html)
     else if (path.includes('dashboard.html')) {
-        const userDisplay = document.getElementById('userDisplay');
-        if(userDisplay) userDisplay.textContent = localStorage.getItem('username');
-        loadTemplates();
-        
-        document.getElementById('saveBtn').addEventListener('click', async () => {
-            const inputs = document.querySelectorAll('#dynamicFields input');
-            const data = {};
-            inputs.forEach(i => data[i.id] = i.value);
-            
-            const res = await fetchAPI('/projects', {
-                method: 'POST',
-                body: JSON.stringify({
-                    project_name: document.getElementById('projectName').value,
-                    template_id: document.getElementById('templateSelect').value,
-                    user_data_json: JSON.stringify(data)
-                })
-            });
-            
-            if(res.ok) {
-                const d = await res.json();
-                window.location.href = `download_page.html?id=${d.project_id}`;
-            }
-        });
+        checkAuth();
+        setupDashboard(); // Cargar nombre de usuario, etc.
     }
-    
-    // --- 4. DOWNLOAD ---
-    else if (path.includes('download_page.html')) {
-        const pid = new URLSearchParams(window.location.search).get('id');
-        document.getElementById('finalDownloadBtn').onclick = async () => {
-            const res = await fetchAPI(`/projects/${pid}/download`);
-            if(res.ok) {
-                const blob = await res.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url; a.download = 'mi_sitio.zip'; a.click();
-            }
-        };
+    // 4. ADMIN (admin_page.html)
+    else if (path.includes('admin_page.html')) {
+        checkAuth();
+        if (localStorage.getItem('role') !== 'admin') {
+            alert('Acceso denegado. No eres Admin.');
+            window.location.href = 'dashboard.html';
+        }
     }
 });
 
-async function loadTemplates() {
-    const sel = document.getElementById('templateSelect');
-    if(!sel) return;
-    const res = await fetchAPI('/templates');
-    const data = await res.json();
-    
-    sel.innerHTML = '<option>Selecciona...</option>';
-    data.forEach(t => {
-        const opt = document.createElement('option');
-        opt.value = t.id;
-        opt.textContent = t.name;
-        opt.dataset.base = t.base_path;
-        sel.appendChild(opt);
+// --- FUNCIONES ESPECÍFICAS ---
+
+function checkAuth() {
+    if (!localStorage.getItem('authToken')) {
+        window.location.href = 'index.html';
+    }
+}
+
+function setupAuthForms() {
+    // Botones para cambiar entre Login y Registro
+    const showReg = document.getElementById('showRegister');
+    const showLog = document.getElementById('showLogin');
+    const formLog = document.getElementById('loginForm');
+    const formReg = document.getElementById('registerForm');
+
+    if(showReg) showReg.onclick = () => { formLog.style.display='none'; formReg.style.display='block'; };
+    if(showLog) showLog.onclick = () => { formReg.style.display='none'; formLog.style.display='block'; };
+
+    // LOGIN
+    if(formLog) formLog.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const loginId = document.getElementById('loginId').value;
+        const password = document.getElementById('loginPassword').value;
+
+        try {
+            const res = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ login_id: loginId, password })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('username', data.username);
+                localStorage.setItem('role', data.role);
+                window.location.href = 'dashboard.html';
+            } else if (res.status === 403 && data.require_otp) {
+                // Cuenta existe pero no verificada -> Guardar ID y mandar a verificar
+                localStorage.setItem('tempUserId', data.user_id);
+                alert("Cuenta no verificada. Por favor ingresa el código.");
+                window.location.href = 'verify_otp.html';
+            } else {
+                showMessage('message', data.message || 'Error al entrar', 'error');
+            }
+        } catch (err) { showMessage('message', 'Error de conexión', 'error'); }
     });
-    
-    sel.addEventListener('change', () => {
-        const base = sel.options[sel.selectedIndex].dataset.base;
-        const container = document.getElementById('dynamicFields');
-        container.innerHTML = '';
-        const fields = ['Titulo', 'Descripcion', 'Contacto']; 
-        fields.forEach(label => {
-            const id = label.toUpperCase();
-            container.innerHTML += `<label>${label}</label><input id="${id}" type="text">`;
-        });
+
+    // REGISTRO
+    if(formReg) formReg.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const u = document.getElementById('registerUsername').value;
+        const em = document.getElementById('registerEmail').value;
+        const p = document.getElementById('registerPassword').value;
+
+        try {
+            const res = await fetch(`${API_URL}/auth/register`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ username: u, email: em, password: p })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                // ¡IMPORTANTE! Guardamos el ID temporal para la verificación
+                localStorage.setItem('tempUserId', data.user_id); 
+                alert('¡Registro exitoso! Revisa la terminal/correo para el código.');
+                window.location.href = 'verify_otp.html';
+            } else {
+                showMessage('message', data.message || 'Error al registrar', 'error');
+            }
+        } catch (err) { showMessage('message', 'Error de conexión', 'error'); }
     });
+}
+
+function setupOTPForm() {
+    const form = document.getElementById('otpForm');
+    if(form) form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const code = document.getElementById('otpCode').value;
+        // Recuperamos el ID que guardamos en el paso anterior
+        const userId = localStorage.getItem('tempUserId');
+
+        if (!userId) {
+            alert("Error: No se encontró el usuario. Regístrate de nuevo.");
+            window.location.href = 'index.html';
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/auth/verify-otp`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ user_id: userId, code: code })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                alert('¡Verificación exitosa! Ahora inicia sesión.');
+                localStorage.removeItem('tempUserId'); // Limpieza
+                window.location.href = 'index.html';
+            } else {
+                showMessage('message', data.message || 'Código incorrecto', 'error');
+            }
+        } catch (err) { showMessage('message', 'Error al verificar', 'error'); }
+    });
+}
+
+function setupDashboard() {
+    const userDisplay = document.getElementById('userDisplay');
+    const adminLink = document.getElementById('adminLink');
+    const uName = localStorage.getItem('username');
+    const role = localStorage.getItem('role');
+
+    if(userDisplay) userDisplay.innerHTML = `<i class="fa-solid fa-user"></i> ${uName}`;
+    if(adminLink && role === 'admin') adminLink.style.display = 'inline-block';
 }

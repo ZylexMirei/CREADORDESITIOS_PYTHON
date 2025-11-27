@@ -15,12 +15,14 @@
 
     <div class="full-hero-container">
         
-        <nav class="landing-nav" data-aos="fade-down" data-aos-delay="500">
+        <nav class="landing-nav" data-aos="fade-down" data-aos-duration="1000">
             <div class="nav-container">
-                <h1 class="logo"><i class="fa-solid fa-bolt"></i> Static Flow</h1>
+                <h1 class="logo">
+                    <i class="fa-solid fa-bolt" style="color:var(--primary-color);"></i> STATIC FLOW
+                </h1>
                 <div class="nav-links">
-                    <a href="#features">Características</a>
-                    <a href="index.html" class="primary-btn nav-btn" style="color:white !important;">
+                    <a href="#features" style="margin-right: 20px;">Características</a>
+                    <a href="index.html" class="primary-btn nav-btn" style="padding: 8px 20px; font-size: 0.9em;">
                         <i class="fa-solid fa-right-to-bracket"></i> Acceder
                     </a>
                 </div>
@@ -30,10 +32,12 @@
         <main class="landing-hero">
             <div class="hero-content">
                 <h1 class="hero-title-main" data-aos="fade-up">
-                    STATIC FLOW
+                    CREA TU SITIO <br>
+                    <span class="text-red">EN SEGUNDOS</span>
                 </h1>
+                
                 <h2 class="hero-subtitle" data-aos="fade-up" data-aos-delay="100">
-                    Tu sitio web estático. <span class="text-red">En segundos.</span>
+                    Potencia pura para tu web. Sin bases de datos, sin esperas.
                 </h2>
                 
                 <div class="hero-buttons" data-aos="fade-up" data-aos-delay="200">
@@ -50,23 +54,25 @@
 
     <section id="features" class="features-section">
         <div class="features-container">
+            
             <div class="glass-card" data-aos="fade-up" data-aos-delay="100">
                 <i class="fa-solid fa-fighter-jet feature-icon"></i>
                 <h3>Ultra Rápido</h3>
-                <p>Genera archivos HTML/CSS puros. Sin bases de datos, sin tiempos de carga.</p>
+                <p>Genera archivos HTML/CSS puros. Carga instantánea.</p>
             </div>
             
             <div class="glass-card" data-aos="fade-up" data-aos-delay="200">
                 <i class="fa-solid fa-wand-magic-sparkles feature-icon"></i>
-                <h3>Fácil de Usar</h3>
-                <p>Elige una plantilla, rellena los datos y descarga tu sitio en segundos.</p>
+                <h3>Diseño Automático</h3>
+                <p>Elige una plantilla y nuestra IA ensambla el código por ti.</p>
             </div>
             
             <div class="glass-card" data-aos="fade-up" data-aos-delay="300">
                 <i class="fa-solid fa-shield-halved feature-icon"></i>
-                <h3>100% Seguro</h3>
-                <p>Sitios estáticos inmunes a hackeos de bases de datos comunes.</p>
+                <h3>Seguridad Total</h3>
+                <p>Imposible de hackear mediante inyección SQL. Tu sitio es estático y blindado.</p>
             </div>
+
         </div>
     </section>
 
@@ -74,5 +80,9 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/effects.js"></script>
     <script src="js/main.js"></script>
+
+    <script>
+        AOS.init();
+    </script>
 </body>
 </html>

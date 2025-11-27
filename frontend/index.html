@@ -2,47 +2,30 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Acceso - Static Flow</title>
+    <title>Acceso</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="center-content">
-    
     <div id="particles-js"></div>
-
     <div class="auth-container">
-        <h1><i class="fa-solid fa-user-circle"></i> Bienvenido</h1>
-        <div id="message" class="message" style="display: none;"></div>
-
+        <h1><i class="fa-solid fa-user"></i> Acceso</h1>
+        <div id="message" class="message" style="display:none;"></div>
         <form id="loginForm">
-            <label>Usuario o Email</label>
-            <input type="text" id="loginId" required>
-            <label>Contraseña</label>
-            <input type="password" id="loginPassword" required>
-            
-            <div style="text-align: right; margin-bottom: 15px; margin-top:5px;">
-                <a href="forgot_password.html" style="font-size: 0.9em; color: var(--primary-color); text-decoration: none;">
-                    ¿Olvidaste tu contraseña?
-                </a>
-            </div>
-
-            <button type="submit" class="primary-btn">Ingresar</button>
-            <button type="button" id="showRegister" class="secondary-btn">Crear cuenta</button>
+            <label>Usuario</label><input type="text" id="loginId" required>
+            <label>Contraseña</label><input type="password" id="loginPassword" required>
+            <div style="text-align:right; margin:10px 0;"><a href="forgot_password.html" style="color:#E60023;">¿Olvidaste clave?</a></div>
+            <button type="submit" class="primary-btn">Entrar</button>
+            <button type="button" id="showRegister" class="secondary-btn">Crear Cuenta</button>
         </form>
-
-        <form id="registerForm" style="display: none;">
-            <label>Usuario</label>
-            <input type="text" id="registerUsername" required>
-            <label>Email</label>
-            <input type="email" id="registerEmail" required>
-            <label>Contraseña</label>
-            <input type="password" id="registerPassword" required>
-            
-            <button type="submit" class="primary-btn">Registrarse</button>
-            <button type="button" id="showLogin" class="secondary-btn">Ya tengo cuenta</button>
+        <form id="registerForm" style="display:none;">
+            <label>Usuario</label><input type="text" id="registerUsername" required>
+            <label>Email</label><input type="email" id="registerEmail" required>
+            <label>Clave</label><input type="password" id="registerPassword" required>
+            <button type="submit" class="primary-btn">Registrarme</button>
+            <button type="button" id="showLogin" class="secondary-btn">Volver</button>
         </form>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <script src="js/effects.js"></script>
     <script src="js/main.js"></script>
